@@ -1,7 +1,8 @@
-import { launchesPastType, launchType, modalType } from "../types/types";
+import { LaunchesPastQuery, LaunchQuery } from '../../gql/schema';
+import { launchesPastType, launchType, modalType } from '../types/types';
 
-const responseApi = (data:[]): launchesPastType[] =>{
-    return( data.map((e:any,idx:number):any=>{
+const launchQuery = (data: LaunchesPastQuery): launchesPastType[] =>{
+    return( data.launchesPast!.map((e:any,idx:number):launchesPastType=>{
       return(
         {
           sno : idx +1,
@@ -17,24 +18,28 @@ const responseApi = (data:[]): launchesPastType[] =>{
     })
     )
   }
-  export {responseApi};
+  export {launchQuery};
 
-  const lazyQuery = (e: launchType): modalType =>{
+  const modalQuery = (res: LaunchQuery): modalType|undefined  =>{
+    console.log(res);
+    const launch = res.launch;
+    if(!launch)
+    return undefined;
       return(
         {
-          id : e.id,
-          mission_name : e.mission_name,
-          details : e.details,
-          launch_date_utc : e.launch_date_utc,
-          article_link : e.links.article_link,
-          site_name : e.launch_site.site_name,
-          rocket_name : e.rocket.rocket_name,
-          flight : e.rocket.first_stage.cores[0].flight,
-          status : e.rocket.first_stage.cores[0].core.status,
-          payload_type : e.rocket.second_stage.payloads[0].payload_type,
-          orbit : e.rocket.second_stage.payloads[0].orbit,
-          rocket_type : e.rocket.rocket_type,
+          id : launch.id || "",
+          mission_name : launch.mission_name || "",
+          details : launch.details || "",
+          launch_date_utc : launch.launch_date_utc,
+          article_link : launch.links?.article_link || "",
+          site_name : launch.launch_site?.site_name || "",
+          rocket_name : launch.rocket?.rocket_name || "",
+          flight : launch.rocket?.first_stage?.cores?.[0]?.flight || -1,
+          status : launch.rocket?.first_stage?.cores?.[0]?.core?.status || "",
+          payload_type : launch.rocket?.second_stage?.payloads?.[0]?.payload_type || "",
+          orbit : launch.rocket?.second_stage?.payloads?.[0]?.orbit || "",
+          rocket_type : launch.rocket?.rocket_type || "",
         }
       )
     }
-  export {lazyQuery};
+  export {modalQuery};

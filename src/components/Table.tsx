@@ -14,13 +14,11 @@ import { useState } from "react";
 import Icon, { DownOutlined, FilterOutlined } from "@ant-design/icons";
 import Logo from "../assets/Logo.svg";
 import loader from "../assets/Loader.svg";
-import { useLazyQuery, useQuery } from "@apollo/client";
 import { launchesPastType, modalType } from "../graphql/types/types";
-import { LAUNCHES_PAST } from "../graphql/schemas/schema";
-import { lazyQuery, responseApi } from "../graphql/response/responseApi";
+import { modalQuery, launchQuery } from "../graphql/response/responseApi";
 import columns from "./Column";
 import ModalView from "./Modal";
-import { MODAl_QUERY } from "../graphql/schemas/launchQuery";
+import { useLaunchesPastQuery, useLaunchLazyQuery } from "../gql/schema";
 
 export default function Tabled() {
   const [tableData, setTableData] = useState<launchesPastType[]>();
@@ -29,15 +27,15 @@ export default function Tabled() {
   const [model, setModel] = useState<modalType>();
   const { Header } = Layout;
 
-  const { loading } = useQuery(LAUNCHES_PAST, {
-    onCompleted: (res) => {
-      const arr: launchesPastType[] = responseApi(res.launchesPast);
+  const {loading} = useLaunchesPastQuery({variables:{limit:109},onCompleted:(res)=>{
+    const arr: launchesPastType[] = launchQuery(res);
+      // console.log(arr);
       setDataSource(arr);
       setTableData(arr);
-    },
-  });
+  }})
 
-  const [getLazyResults] = useLazyQuery(MODAl_QUERY);
+
+  const [getLazyResults] = useLaunchLazyQuery();
 
   const archive = () => <img src={loader} className="spin-props" />;
 
@@ -89,7 +87,7 @@ export default function Tabled() {
     getLazyResults({
       variables: { id: rowID },
       onCompleted(data) {
-        const arr = lazyQuery(data.launch);
+        const arr = modalQuery(data);
         setModel(arr);
         setIsModalOpen(true);
       },

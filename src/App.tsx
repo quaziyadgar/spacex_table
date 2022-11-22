@@ -1,8 +1,4 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { Button, Space, Input, Progress, Slider} from 'antd';
-import SpinFC from 'antd/lib/spin';
+import './App.css'
 import Tabled from './components/Table';
 import './App.scss'
 
